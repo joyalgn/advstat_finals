@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Regression Analysis | ADVSTAT</title>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+<header class="nav">
+  <a class="brand" href="index.html">ADV<span>STAT</span></a>
+  <ul>
+    <li><a href="index.html">Home</a></li>
+    <li><a href="regression.html" class="active">Regression</a></li>
+    <li><a href="hypothesis.html">Hypothesis Testing</a></li>
+  </ul>
+</header>
+  <main class="container">
+    <section class="page-head reveal">
+      <h1>Simple Linear Regression</h1>
+      <p>Enter paired (X, Y) values to compute the regression equation Y = a + bX, the correlation coefficient r, and the strength of the relationship.</p>
+    </section>
+
+    <div class="tool">
+      <section class="panel reveal" style="--d:.1s">
+        <h2>1. Data input</h2>
+        <label for="data">One "X, Y" pair per line</label>
+        <textarea id="data" rows="12" placeholder="1, 52&#10;2, 55&#10;3, 61"></textarea>
+        <div class="row">
+          <button class="btn" id="sample" type="button">Load sample</button>
+          <label class="btn" for="file" style="margin:0">Upload CSV</label>
+          <input type="file" id="file" accept=".csv,.txt" hidden />
+          <button class="btn" id="clear" type="button">Clear</button>
+        </div>
+        <button class="btn primary block" id="run" type="button">Run analysis</button>
+        <p class="error" id="error" hidden></p>
+      </section>
+
+      <div>
+        <section class="panel empty reveal" id="placeholder" style="--d:.2s">Results will appear here after you run the analysis.</section>
+        <section class="stack" id="results" hidden>
+          <div class="stats-grid">
+            <div class="stat wide"><small>Regression equation</small><b id="eq">—</b></div>
+            <div class="stat"><small>Correlation (r)</small><b id="r">—</b></div>
+            <div class="stat"><small>R²</small><b id="r2">—</b></div>
+            <div class="stat"><small>Strength</small><b id="strength">—</b></div>
+            <div class="stat"><small>Data points (n)</small><b id="n">—</b></div>
+          </div>
+          <div class="panel">
+            <h2>Scatter diagram with regression line</h2>
+            <canvas class="chart" id="scatter"></canvas>
+          </div>
+          <div class="panel">
+            <h2>Interpretation</h2>
+            <p id="interp" style="margin:0;color:#cdd6e6"></p>
+            <div class="predict">
+              <div class="field"><label for="predX">Predict Y for X =</label><input type="number" id="predX" step="any" placeholder="e.g. 11" /></div>
+              <output id="predOut">—</output>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </main>
+  <footer>ADVSTAT · Advanced Statistics Final Project</footer>
+  <script type="module" src="js/regression.js"></script>
+</body>
+</html>
