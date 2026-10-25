@@ -66,9 +66,34 @@ export default function HomeCanvas({ persistent = false }: HomeCanvasProps) {
       }
       ctx!.stroke();
 
-      const graphPanel = isAuthCanvas
-        ? document.querySelector<HTMLElement>(".auth-graph-panel")?.getBoundingClientRect()
+      const graphPanelElement = isAuthCanvas
+        ? document.querySelector<HTMLElement>(".auth-graph-panel")
         : undefined;
+      const graphPanel = graphPanelElement?.getBoundingClientRect();
+      if (graphPanel && graphPanelElement) {
+        ctx!.beginPath();
+        ctx!.roundRect(
+          graphPanel.left,
+          graphPanel.top,
+          graphPanel.width,
+          graphPanel.height,
+          parseFloat(getComputedStyle(graphPanelElement).borderTopLeftRadius),
+        );
+        if (dark) {
+          const panelGradient = ctx!.createLinearGradient(
+            graphPanel.left,
+            graphPanel.top,
+            graphPanel.left + graphPanel.width,
+            graphPanel.top + graphPanel.height,
+          );
+          panelGradient.addColorStop(0, "#8A6037");
+          panelGradient.addColorStop(1, "#69492F");
+          ctx!.fillStyle = panelGradient;
+        } else {
+          ctx!.fillStyle = "#35483D";
+        }
+        ctx!.fill();
+      }
       const curveWidth = isAuthCanvas
         ? Math.min((graphPanel?.width ?? width * 0.78) * 0.84, 560)
         : Math.min(210, width * 0.28);
@@ -98,10 +123,14 @@ export default function HomeCanvas({ persistent = false }: HomeCanvasProps) {
       }
       ctx!.lineTo(startX + curveWidth, baseline);
       ctx!.closePath();
-      ctx!.fillStyle = dark ? `rgba(212,168,91,${fillAlpha})` : `rgba(102,120,95,${fillAlpha})`;
+      ctx!.fillStyle = isAuthCanvas
+        ? `rgba(212,168,91,${fillAlpha})`
+        : dark ? `rgba(212,168,91,${fillAlpha})` : `rgba(102,120,95,${fillAlpha})`;
       ctx!.fill();
 
-      ctx!.strokeStyle = dark ? `rgba(212,168,91,${curveAlpha})` : `rgba(173,125,44,${curveAlpha})`;
+      ctx!.strokeStyle = isAuthCanvas
+        ? `rgba(235,199,128,${curveAlpha})`
+        : dark ? `rgba(212,168,91,${curveAlpha})` : `rgba(173,125,44,${curveAlpha})`;
       ctx!.lineWidth = isAuthCanvas ? 1.5 : 1.25;
       if (isAuthCanvas) {
         ctx!.save();
@@ -122,7 +151,7 @@ export default function HomeCanvas({ persistent = false }: HomeCanvasProps) {
       if (isAuthCanvas) {
         ctx!.save();
         ctx!.setLineDash([2, 6]);
-        ctx!.strokeStyle = dark ? "rgba(212,168,91,0.22)" : "rgba(102,120,95,0.25)";
+        ctx!.strokeStyle = "rgba(212,168,91,0.4)";
         ctx!.lineWidth = 1;
         ctx!.beginPath();
         ctx!.moveTo(startX, baseline);
@@ -139,7 +168,7 @@ export default function HomeCanvas({ persistent = false }: HomeCanvasProps) {
         ];
         ctx!.font = "11px Georgia, serif";
         ctx!.textAlign = "center";
-        ctx!.fillStyle = dark ? "rgba(195,204,185,0.56)" : "rgba(81,96,75,0.58)";
+        ctx!.fillStyle = "rgba(232,235,222,0.88)";
         for (const deviation of deviations) {
           const tickX = startX + curveWidth * deviation.position;
           ctx!.beginPath();
@@ -150,7 +179,7 @@ export default function HomeCanvas({ persistent = false }: HomeCanvasProps) {
         }
 
         ctx!.setLineDash([2, 4]);
-        ctx!.strokeStyle = dark ? "rgba(212,168,91,0.2)" : "rgba(173,125,44,0.24)";
+        ctx!.strokeStyle = "rgba(212,168,91,0.46)";
         ctx!.beginPath();
         ctx!.moveTo(centerX, baseline - curveHeight - 8);
         ctx!.lineTo(centerX, baseline + 4);
@@ -159,7 +188,7 @@ export default function HomeCanvas({ persistent = false }: HomeCanvasProps) {
 
         const symbolAlpha = 0.44 + breathe * 0.2;
         const symbolDrift = reduceMotion ? 0 : Math.sin(timestamp / 1800) * 5;
-        ctx!.fillStyle = dark ? `rgba(195,204,185,${symbolAlpha})` : `rgba(102,120,95,${symbolAlpha})`;
+        ctx!.fillStyle = `rgba(221,229,214,${Math.max(symbolAlpha, 0.84)})`;
         ctx!.font = "14px Georgia, serif";
         ctx!.textAlign = "left";
         ctx!.fillText("σ", Math.min(width - 22, startX + curveWidth + 12), baseline - curveHeight * 0.55 + symbolDrift);
@@ -238,9 +267,11 @@ export default function HomeCanvas({ persistent = false }: HomeCanvasProps) {
           ctx!.stroke();
         }
 
-        ctx!.fillStyle = dot.gold
-          ? `rgba(${goldColor},${isAuthCanvas ? 0.42 : 0.3})`
-          : `rgba(${dotColor},${isAuthCanvas ? dark ? 0.35 : 0.3 : dark ? 0.33 : 0.3})`;
+        ctx!.fillStyle = isAuthCanvas
+          ? dot.gold ? "rgba(212,168,91,0.58)" : "rgba(195,204,185,0.46)"
+          : dot.gold
+            ? `rgba(${goldColor},0.3)`
+            : `rgba(${dotColor},${dark ? 0.33 : 0.3})`;
         ctx!.beginPath();
         ctx!.arc(dot.x, dot.y, dot.gold ? 1.6 : isAuthCanvas ? 1.8 : 1.6, 0, Math.PI * 2);
         ctx!.fill();
