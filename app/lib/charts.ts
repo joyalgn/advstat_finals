@@ -1,17 +1,35 @@
 // Canvas charts (no libraries): animated scatter plot and bell curve.
-import type { Dist } from "./stats.js";
+import type { Dist } from "./stats";
 
 const C = {
-  axis: "#5b6b88",
-  grid: "#1b2640",
-  text: "#aab6cc",
-  point: "#5b9dff",
-  line: "#fbbf24",
-  curve: "#e8edf7",
-  reject: "rgba(248,113,113,0.38)",
-  accept: "rgba(91,157,255,0.16)",
-  stat: "#34d399",
+  axis: "#958785",
+  grid: "#E4DFD3",
+  text: "#66785F",
+  point: "#66785F",
+  line: "#D4A85B",
+  curve: "#25352D",
+  reject: "rgba(140,81,74,0.18)",
+  accept: "rgba(102,120,95,0.12)",
+  stat: "#66785F",
+  background: "#F4F1E8",
 };
+
+const DARK_C = {
+  axis: "#AAB4A4",
+  grid: "#45554A",
+  text: "#DCE2D5",
+  point: "#AEBDA3",
+  line: "#D4A85B",
+  curve: "#F4F1E8",
+  reject: "rgba(217,147,137,0.22)",
+  accept: "rgba(102,120,95,0.18)",
+  stat: "#D4A85B",
+  background: "#2E4036",
+};
+
+function chartColors() {
+  return document.documentElement.dataset.theme === "light" ? C : DARK_C;
+}
 
 /* ── helpers ── */
 
@@ -69,6 +87,7 @@ export function drawScatter(
   a: number, b: number,
   duration = 1200
 ): void {
+  const colors = chartColors();
   const { ctx, w, h } = setup(canvas);
   const pad = { l: 58, r: 22, t: 18, b: 46 };
   const pw = w - pad.l - pad.r;
@@ -88,27 +107,27 @@ export function drawScatter(
 
     // grid + tick labels
     ctx.lineWidth = 1;
-    ctx.fillStyle = C.text;
+    ctx.fillStyle = colors.text;
     ctx.textAlign = "right";
     ctx.textBaseline = "middle";
     for (let v = sy.lo; v <= sy.hi + sy.step / 2; v += sy.step) {
-      ctx.strokeStyle = C.grid;
+      ctx.strokeStyle = colors.grid;
       ctx.beginPath(); ctx.moveTo(pad.l, py(v)); ctx.lineTo(pad.l + pw, py(v)); ctx.stroke();
       ctx.fillText(tickText(v, sy.step), pad.l - 8, py(v));
     }
     ctx.textAlign = "center";
     ctx.textBaseline = "top";
     for (let v = sx.lo; v <= sx.hi + sx.step / 2; v += sx.step) {
-      ctx.strokeStyle = C.grid;
+      ctx.strokeStyle = colors.grid;
       ctx.beginPath(); ctx.moveTo(px(v), pad.t); ctx.lineTo(px(v), pad.t + ph); ctx.stroke();
       ctx.fillText(tickText(v, sx.step), px(v), pad.t + ph + 8);
     }
     // axes
-    ctx.strokeStyle = C.axis;
+    ctx.strokeStyle = colors.axis;
     ctx.beginPath();
     ctx.moveTo(pad.l, pad.t); ctx.lineTo(pad.l, pad.t + ph); ctx.lineTo(pad.l + pw, pad.t + ph);
     ctx.stroke();
-    ctx.fillStyle = C.text;
+    ctx.fillStyle = colors.text;
     ctx.textBaseline = "alphabetic";
     ctx.fillText("X", pad.l + pw / 2, h - 6);
     ctx.save();
@@ -121,16 +140,16 @@ export function drawScatter(
     xs.forEach((x, i) => {
       const k = clamp01(t * 1.7 - (i / xs.length) * 0.7);
       if (k <= 0) return;
-      ctx.fillStyle = C.point;
+      ctx.fillStyle = colors.point;
       ctx.beginPath(); ctx.arc(px(x), py(ys[i]), 5 * k, 0, Math.PI * 2); ctx.fill();
-      ctx.strokeStyle = "#0a0f1c"; ctx.lineWidth = 1.5; ctx.stroke();
+      ctx.strokeStyle = colors.background; ctx.lineWidth = 1.5; ctx.stroke();
     });
 
     // regression line (draws left → right)
     const k = clamp01((t - 0.35) / 0.65);
     if (k > 0) {
       const x2 = xMin + (xMax - xMin) * k;
-      ctx.strokeStyle = C.line;
+      ctx.strokeStyle = colors.line;
       ctx.lineWidth = 2.5;
       ctx.beginPath(); ctx.moveTo(px(xMin), py(a + b * xMin)); ctx.lineTo(px(x2), py(a + b * x2)); ctx.stroke();
     }
@@ -147,6 +166,7 @@ export function drawBell(
   critHigh: number | null,
   duration = 1400
 ): void {
+  const colors = chartColors();
   const { ctx, w, h } = setup(canvas);
   const pad = { l: 24, r: 24, t: 24, b: 36 };
   const pw = w - pad.l - pad.r;
@@ -184,9 +204,9 @@ export function drawBell(
 
     const lo = critLow ?? -m;
     const hi = critHigh ?? m;
-    region(lo, hi, C.accept);
-    if (critLow !== null) region(-m, critLow, C.reject);
-    if (critHigh !== null) region(critHigh, m, C.reject);
+    region(lo, hi, colors.accept);
+    if (critLow !== null) region(-m, critLow, colors.reject);
+    if (critHigh !== null) region(critHigh, m, colors.reject);
 
     ctx.beginPath();
     for (let s = 0; s <= 300; s++) {
@@ -194,16 +214,16 @@ export function drawBell(
       if (s === 0) ctx.moveTo(px(x), py(dist.pdf(x)));
       else ctx.lineTo(px(x), py(dist.pdf(x)));
     }
-    ctx.strokeStyle = C.curve;
+    ctx.strokeStyle = colors.curve;
     ctx.lineWidth = 2.5;
     ctx.stroke();
     ctx.restore();
 
     // axis + ticks
-    ctx.strokeStyle = C.axis;
+    ctx.strokeStyle = colors.axis;
     ctx.lineWidth = 1;
     ctx.beginPath(); ctx.moveTo(pad.l, base); ctx.lineTo(pad.l + pw, base); ctx.stroke();
-    ctx.fillStyle = C.text;
+    ctx.fillStyle = colors.text;
     ctx.textAlign = "center";
     ctx.textBaseline = "top";
     for (let v = -m; v <= m; v++) {
@@ -214,7 +234,7 @@ export function drawBell(
     // labels, critical lines and the test statistic fade in at the end
     ctx.globalAlpha = clamp01((t - 0.6) / 0.4);
     ctx.textBaseline = "middle";
-    ctx.fillStyle = C.text;
+    ctx.fillStyle = colors.text;
     ctx.textAlign = "center";
     ctx.fillText("Fail to reject H₀", px((lo + hi) / 2), base - 14);
     if (critLow !== null && px(critLow) - pad.l > 80) { ctx.fillText("Reject H₀", (pad.l + px(critLow)) / 2, base - 14); }
@@ -222,8 +242,8 @@ export function drawBell(
 
     ctx.setLineDash([6, 5]);
     ctx.lineWidth = 1.5;
-    ctx.strokeStyle = C.line;
-    ctx.fillStyle = C.line;
+    ctx.strokeStyle = colors.line;
+    ctx.fillStyle = colors.line;
     const crit = (v: number, side: "left" | "right") => {
       ctx.beginPath(); ctx.moveTo(px(v), pad.t); ctx.lineTo(px(v), base); ctx.stroke();
       ctx.textAlign = side === "right" ? "left" : "right";
@@ -233,8 +253,8 @@ export function drawBell(
     if (critHigh !== null) crit(critHigh, "right");
 
     ctx.setLineDash([]);
-    ctx.strokeStyle = C.stat;
-    ctx.fillStyle = C.stat;
+    ctx.strokeStyle = colors.stat;
+    ctx.fillStyle = colors.stat;
     ctx.lineWidth = 2.5;
     ctx.beginPath(); ctx.moveTo(px(stat), pad.t); ctx.lineTo(px(stat), base); ctx.stroke();
     ctx.beginPath(); ctx.arc(px(stat), base, 5, 0, Math.PI * 2); ctx.fill();

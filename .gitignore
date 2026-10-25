@@ -1,3 +1,19 @@
+
 node_modules
 public/js
 .vercel
+
+# Next.js
+.next/
+
+# Environment variables and secrets
+.env
+.env.*
+!.env.example
+
+# Local database
+dev.db
+dev.db-journal
+
+# TypeScript generated file
+tsconfig.tsbuildinfo
