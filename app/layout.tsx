@@ -1,5 +1,6 @@
 import "./globals.css";
 import type { Metadata } from "next";
+import HomeCanvas from "../components/HomeCanvas";
 
 export const metadata: Metadata = {
   title: "ADVSTAT | Statistical Analysis System",
@@ -14,7 +15,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <HomeCanvas persistent />
+        {children}
+      </body>
     </html>
   );
 }
