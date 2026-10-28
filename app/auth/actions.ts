@@ -31,7 +31,7 @@ export async function registerAction(_state: AuthActionState, formData: FormData
   const password = String(formData.get("password") ?? "");
   if (name.length < 2 || name.length > 80) return { error: "Name must be between 2 and 80 characters." };
   if (email.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return { error: "Enter a valid email address." };
-  if (password.length < 12 || password.length > 256) return { error: "Password must be between 12 and 256 characters." };
+  if (password.length < 8 || password.length > 12) return { error: "Password must be between 8 and 12 characters." };
   try {
     assertSessionSecret();
   } catch {
@@ -55,9 +55,10 @@ export async function registerAction(_state: AuthActionState, formData: FormData
 export async function loginAction(_state: AuthActionState, formData: FormData): Promise<AuthActionState> {
   const email = String(formData.get("email") ?? "").trim().toLowerCase();
   const password = String(formData.get("password") ?? "");
-  if (email.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || !password || password.length > 256) {
+  if (email.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
     return { error: "Email or password is incorrect." };
   }
+  if (password.length < 8 || password.length > 12) return { error: "Password must be between 8 and 12 characters." };
   try {
     assertSessionSecret();
   } catch {

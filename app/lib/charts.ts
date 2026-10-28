@@ -15,20 +15,20 @@ const C = {
 };
 
 const DARK_C = {
-  axis: "#AAB4A4",
-  grid: "#45554A",
-  text: "#DCE2D5",
-  point: "#AEBDA3",
-  line: "#D4A85B",
-  curve: "#F4F1E8",
-  reject: "rgba(217,147,137,0.22)",
-  accept: "rgba(102,120,95,0.18)",
-  stat: "#D4A85B",
-  background: "#2E4036",
+  axis: "#A0A0A0",
+  grid: "#3E3E42",
+  text: "#D4D4D4",
+  point: "#D7A64A",
+  line: "#D7A64A",
+  curve: "#D4D4D4",
+  reject: "rgba(215,166,74,0.22)",
+  accept: "rgba(160,160,160,0.12)",
+  stat: "#D7A64A",
+  background: "#2D2D30",
 };
 
 function chartColors() {
-  return document.documentElement.dataset.theme === "light" ? C : DARK_C;
+  return document.documentElement.dataset.theme === "dark" ? DARK_C : C;
 }
 
 /* ── helpers ── */
@@ -85,7 +85,9 @@ export function drawScatter(
   canvas: HTMLCanvasElement,
   xs: number[], ys: number[],
   a: number, b: number,
-  duration = 1200
+  duration = 1200,
+  xLabel = "X",
+  yLabel = "Y",
 ): void {
   const colors = chartColors();
   const { ctx, w, h } = setup(canvas);
@@ -129,11 +131,11 @@ export function drawScatter(
     ctx.stroke();
     ctx.fillStyle = colors.text;
     ctx.textBaseline = "alphabetic";
-    ctx.fillText("X", pad.l + pw / 2, h - 6);
+    ctx.fillText(xLabel, pad.l + pw / 2, h - 6, pw);
     ctx.save();
     ctx.translate(14, pad.t + ph / 2);
     ctx.rotate(-Math.PI / 2);
-    ctx.fillText("Y", 0, 0);
+    ctx.fillText(yLabel, 0, 0, ph);
     ctx.restore();
 
     // points (pop in one after another)

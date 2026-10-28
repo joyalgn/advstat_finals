@@ -14,7 +14,7 @@ export default function NavBar({ user }: NavBarProps) {
 
   return (
     <header className="nav">
-      <Link className="brand" href="/">ADV<span>STAT</span></Link>
+      <Link className="brand" href="/">STAT<span>AXIS</span></Link>
       <nav aria-label="Main navigation">
         <ul>
           <li><Link className={active("/")} href="/">Home</Link></li>

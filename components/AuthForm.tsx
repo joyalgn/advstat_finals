@@ -13,6 +13,7 @@ export default function AuthForm({ mode }: AuthFormProps) {
   const action = mode === "login" ? loginAction : registerAction;
   const [state, formAction, pending] = useActionState(action, {});
   const [showPassword, setShowPassword] = useState(false);
+  const [passwordLengthError, setPasswordLengthError] = useState("");
   const router = useRouter();
   const registering = mode === "register";
   const authPath = registering ? "/login" : "/register";
@@ -64,8 +65,8 @@ export default function AuthForm({ mode }: AuthFormProps) {
                 <circle cx="36.5" cy="5.5" r="2.5" fill="var(--gold)" />
               </svg>
             </div>
-            <h1>{registering ? "Create your ADVSTAT account" : "Log in to ADVSTAT"}</h1>
-            <p>{registering ? "Create a personal account to access ADVSTAT." : "Your next insight starts here."}</p>
+            <h1>{registering ? "Create your STATAXIS account" : "Log in to STATAXIS"}</h1>
+            <p>{registering ? "Create a personal account to access STATAXIS." : "Your next insight starts here."}</p>
           </header>
           <form action={formAction}>
             {registering && (
@@ -88,7 +89,10 @@ export default function AuthForm({ mode }: AuthFormProps) {
               <label htmlFor="password">Password</label>
               <div className="auth-input-wrap auth-password-wrap">
                 <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="4.5" y="10" width="15" height="10" rx="2" /><path d="M8 10V7a4 4 0 0 1 8 0v3M12 14v2" /></svg>
-                <input id="password" className="auth-password-input" name="password" type={showPassword ? "text" : "password"} autoComplete={registering ? "new-password" : "current-password"} minLength={registering ? 12 : undefined} maxLength={256} required />
+                <input id="password" className="auth-password-input" name="password" type={showPassword ? "text" : "password"} autoComplete={registering ? "new-password" : "current-password"} minLength={8} maxLength={256} aria-describedby="password-hint password-length-error" onChange={(event) => {
+                  const length = event.target.value.length;
+                  setPasswordLengthError(length > 0 && (length < 8 || length > 12) ? "Password must be between 8 and 12 characters." : "");
+                }} required />
                 <button
                   className="password-toggle"
                   type="button"
@@ -108,13 +112,14 @@ export default function AuthForm({ mode }: AuthFormProps) {
                   )}
                 </button>
               </div>
-              {registering && <p className="hint">Use at least 12 characters.</p>}
+              <p id="password-hint" className="hint">Use 8–12 characters.</p>
+              {passwordLengthError && <p id="password-length-error" className="error" role="alert">{passwordLengthError}</p>}
             </div>
             {state.error && <p className="error" role="alert">{state.error}</p>}
             <button className="btn primary block auth-submit" type="submit" disabled={pending}>{pending ? "Please wait..." : registering ? "Create account" : "Log in"}</button>
           </form>
           <p className="auth-switch">
-            {registering ? "Already registered?" : "New to ADVSTAT?"}{" "}
+            {registering ? "Already registered?" : "New to STATAXIS?"}{" "}
             <Link href={authPath} onClick={navigateWithTransition}>{registering ? "Log in" : "Create an account"}</Link>
           </p>
         </section>

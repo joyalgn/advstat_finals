@@ -10,16 +10,17 @@ interface DashboardShellProps {
   user: { name: string; email: string };
 }
 
-const THEME_KEY = "advstat-theme";
+const THEME_KEY = "stataxis-theme";
+const LEGACY_THEME_KEY = "advstat-theme";
 
 export default function DashboardShell({ children, user }: DashboardShellProps) {
   const pathname = usePathname();
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(true);
   const [theme, setTheme] = useState<"dark" | "light">("light");
   const [themeReady, setThemeReady] = useState(false);
 
   useEffect(() => {
-    const savedTheme = window.localStorage.getItem(THEME_KEY);
+    const savedTheme = window.localStorage.getItem(THEME_KEY) ?? window.localStorage.getItem(LEGACY_THEME_KEY);
     if (savedTheme === "light" || savedTheme === "dark") setTheme(savedTheme);
     setThemeReady(true);
   }, []);
@@ -28,7 +29,7 @@ export default function DashboardShell({ children, user }: DashboardShellProps) 
     if (!themeReady) return;
     document.documentElement.dataset.theme = theme;
     window.localStorage.setItem(THEME_KEY, theme);
-    window.dispatchEvent(new Event("advstat-theme-change"));
+    window.dispatchEvent(new Event("stataxis-theme-change"));
   }, [theme, themeReady]);
 
   const linkClass = (path: string) => `sidebar-link${pathname === path ? " active" : ""}`;
@@ -37,8 +38,8 @@ export default function DashboardShell({ children, user }: DashboardShellProps) 
     <div className={`dashboard-shell${collapsed ? " is-collapsed" : ""}`}>
       <aside className="sidebar">
         <div className="sidebar-brand-row">
-          <Link className="sidebar-brand" href="/">ADV<span>STAT</span></Link>
-          <button className="sidebar-collapse" type="button" onClick={() => setCollapsed((value) => !value)} aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"} title={collapsed ? "Expand sidebar" : "Collapse sidebar"}>
+          <Link className="sidebar-brand" href="/">STAT<span>AXIS</span></Link>
+          <button className="sidebar-collapse" type="button" onClick={() => setCollapsed((value) => !value)} aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"} aria-expanded={!collapsed} title={collapsed ? "Expand sidebar" : "Collapse sidebar"}>
             <span aria-hidden="true">{collapsed ? "›" : "‹"}</span>
           </button>
         </div>
@@ -47,6 +48,8 @@ export default function DashboardShell({ children, user }: DashboardShellProps) 
           <Link className={linkClass("/dashboard")} href="/dashboard" title="Dashboard"><span className="sidebar-icon" aria-hidden="true">⌂</span><span className="sidebar-label">Dashboard</span></Link>
           <Link className={linkClass("/regression")} href="/regression" title="Regression"><span className="sidebar-icon" aria-hidden="true">R</span><span className="sidebar-label">Regression</span></Link>
           <Link className={linkClass("/hypothesis")} href="/hypothesis" title="Hypothesis Testing"><span className="sidebar-icon" aria-hidden="true">H₀</span><span className="sidebar-label">Hypothesis Testing</span></Link>
+          <Link className={linkClass("/history")} href="/history" title="History"><span className="sidebar-icon" aria-hidden="true">◷</span><span className="sidebar-label">History</span></Link>
+          <Link className={linkClass("/guide")} href="/guide" title="Stats Guide"><span className="sidebar-icon" aria-hidden="true">?</span><span className="sidebar-label">Stats Guide</span></Link>
         </nav>
 
         <div className="sidebar-bottom">
@@ -66,7 +69,7 @@ export default function DashboardShell({ children, user }: DashboardShellProps) 
       </aside>
       <div className="dashboard-content">
         <header className="dashboard-topbar">
-          <div className="topbar-heading"><span className="topbar-brand">ADVSTAT</span><span className="topbar-divider" aria-hidden="true" /><span className="topbar-context">Statistical Workspace</span></div>
+          <div className="topbar-heading"><span className="topbar-brand">STATAXIS</span><span className="topbar-divider" aria-hidden="true" /><span className="topbar-context">Statistical Workspace</span></div>
           <details className="profile-menu">
             <summary><span className="profile-avatar topbar-avatar" aria-hidden="true">{user.name.trim().charAt(0).toUpperCase()}</span><span className="topbar-user-name">{user.name}</span><span className="menu-caret" aria-hidden="true">⌄</span></summary>
             <div className="profile-menu-panel">

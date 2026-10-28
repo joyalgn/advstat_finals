@@ -21,10 +21,10 @@ export function useCanvasRedraw<T extends HTMLCanvasElement>(
     });
     observer.observe(canvas);
     const redrawForTheme = () => draw(0);
-    window.addEventListener("advstat-theme-change", redrawForTheme);
+    window.addEventListener("stataxis-theme-change", redrawForTheme);
     return () => {
       observer.disconnect();
-      window.removeEventListener("advstat-theme-change", redrawForTheme);
+      window.removeEventListener("stataxis-theme-change", redrawForTheme);
     };
   }, [ref, draw, redrawKey]);
 }

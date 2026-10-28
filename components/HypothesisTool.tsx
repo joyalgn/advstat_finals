@@ -1,13 +1,28 @@
 "use client";
 
 import { useCallback, useRef, useState } from "react";
+import type { Prisma } from "@prisma/client";
 import { drawBell } from "../app/lib/charts";
+import { saveAnalysisHistory } from "../app/history/actions";
 import { useCanvasRedraw } from "../hooks/useCanvasRedraw";
 import { runTest, type SampleType, type Tail, type TestInput, type TestResult, type TestType } from "../lib/stats";
 import { fmt, fmtP } from "../lib/utils";
 
 const INITIAL_VALUES = { mean1: "", sd1: "", n1: "", mean2: "", sd2: "", n2: "", mu0: "" };
 type InputValues = typeof INITIAL_VALUES;
+
+const ONE_SAMPLE_DATA = [
+  { mean1: "52.3", sd1: "6.5", n1: "36", mean2: "", sd2: "", n2: "", mu0: "50" },
+  { mean1: "48.7", sd1: "5.8", n1: "42", mean2: "", sd2: "", n2: "", mu0: "50" },
+  { mean1: "74.2", sd1: "8.1", n1: "30", mean2: "", sd2: "", n2: "", mu0: "72" },
+  { mean1: "63.6", sd1: "7.4", n1: "35", mean2: "", sd2: "", n2: "", mu0: "65" },
+];
+const TWO_SAMPLE_DATA = [
+  { mean1: "52.3", sd1: "6.5", n1: "36", mean2: "49.1", sd2: "7.2", n2: "40", mu0: "0" },
+  { mean1: "81.4", sd1: "9.2", n1: "32", mean2: "77.8", sd2: "8.5", n2: "29", mu0: "0" },
+  { mean1: "24.6", sd1: "4.3", n1: "25", mean2: "26.1", sd2: "4.8", n2: "28", mu0: "0" },
+  { mean1: "68.2", sd1: "7.6", n1: "38", mean2: "65.5", sd2: "8.1", n2: "34", mu0: "0" },
+];
 
 function numberValue(values: InputValues, key: keyof InputValues): number {
   const raw = values[key].trim();
@@ -39,6 +54,8 @@ export default function HypothesisTool() {
   const [result, setResult] = useState<TestResult | null>(null);
   const [resultAlpha, setResultAlpha] = useState(0.05);
   const [error, setError] = useState("");
+  const [historyError, setHistoryError] = useState("");
+  const sampleIndex = useRef(-1);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   const draw = useCallback((duration?: number) => {
@@ -55,9 +72,12 @@ export default function HypothesisTool() {
     if (key === "mu0") updateHypotheses(sample, tail, value);
   }
 
-  function run() {
+  async function run() {
+    setHistoryError("");
+    let input: TestInput;
+    let analysis: TestResult;
     try {
-      const input: TestInput = {
+      input = {
         test, sample, tail, alpha: Number(alpha),
         mean1: numberValue(values, "mean1"), sd1: numberValue(values, "sd1"), n1: numberValue(values, "n1"),
         mean2: sample === "two" ? numberValue(values, "mean2") : 0,
@@ -65,19 +85,46 @@ export default function HypothesisTool() {
         n2: sample === "two" ? numberValue(values, "n2") : 2,
         mu0: numberValue(values, "mu0"),
       };
-      setResult(runTest(input));
+      analysis = runTest(input);
+      setResult(analysis);
       setResultAlpha(Number(alpha));
       setError("");
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : "Unable to run the test.");
+      return;
+    }
+
+    try {
+      const saved = await saveAnalysisHistory("Hypothesis Testing", {
+        ...input,
+        hypotheses,
+      }, {
+        test: input.test,
+        sample: input.sample,
+        tail: input.tail,
+        alpha: input.alpha,
+        statistic: analysis.statistic,
+        pValue: analysis.pValue,
+        criticalValue: criticalText(analysis),
+        standardError: analysis.standardError,
+        degreesOfFreedom: analysis.df,
+        rejectNull: analysis.reject,
+      } satisfies Prisma.InputJsonValue);
+      if (!saved.success) setHistoryError(saved.message);
+    } catch {
+      setHistoryError("The analysis completed, but history could not be saved. Check your connection and try again.");
     }
   }
 
   function loadSample() {
-    const nextValues = { mean1: "52.3", sd1: "6.5", n1: "36", mean2: "49.1", sd2: "7.2", n2: "40", mu0: sample === "one" ? "50" : "0" };
+    const samples = sample === "one" ? ONE_SAMPLE_DATA : TWO_SAMPLE_DATA;
+    sampleIndex.current = (sampleIndex.current + 1) % samples.length;
+    const nextValues = samples[sampleIndex.current];
     setValues(nextValues);
     updateHypotheses(sample, tail, nextValues.mu0);
+    setResult(null);
     setError("");
+    setHistoryError("");
   }
 
   const sdName = test === "z" ? "Population std. dev." : "Sample std. dev.";
@@ -116,9 +163,10 @@ export default function HypothesisTool() {
           </div>
         </>}
         <NumberField id="mu0" label={sample === "one" ? "Hypothesized mean (μ₀)" : "Hypothesized difference (D₀)"} value={values.mu0} onChange={(value) => setValue("mu0", value)} />
-        <div className="row"><button className="btn" type="button" onClick={loadSample}>Load sample data</button></div>
+        <div className="row"><button className="btn" type="button" onClick={loadSample}>Reload sample data</button></div>
         <button className="btn primary block" type="button" onClick={run}>Run test</button>
         {error && <p className="error" role="alert">{error}</p>}
+        {historyError && <p className="error" role="alert">{historyError}</p>}
       </section>
 
       <div>
@@ -126,7 +174,7 @@ export default function HypothesisTool() {
           <section className="panel empty reveal" style={{ "--d": ".2s" } as React.CSSProperties}>Results will appear here after you run the test.</section>
         ) : (
           <section className="stack pop" key="hypothesis-results">
-            <div className={`decision ${result.reject ? "reject" : "keep"}`}>
+            <div className={`decision analysis-highlight ${result.reject ? "reject" : "keep"}`}>
               <h3>{result.reject ? "Reject H₀" : "Fail to reject H₀"}</h3>
               <p>At α = {resultAlpha}, the test statistic {result.dist.name} = {fmt(result.statistic)} {result.reject ? "falls in the rejection region" : "falls in the acceptance region"} (critical value {criticalText(result)}), and the p-value is {fmtP(result.pValue)}. {result.reject ? "There is sufficient evidence to support the alternative hypothesis H₁." : "There is not enough evidence to support the alternative hypothesis H₁."}</p>
             </div>

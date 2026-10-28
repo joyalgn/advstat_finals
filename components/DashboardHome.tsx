@@ -8,7 +8,7 @@ export default function DashboardHome() {
       <div className="home-grid">
         <section className="home-intro bento-card reveal" style={{ "--d": ".05s" } as React.CSSProperties}>
           <span className="eyebrow">Advanced statistics</span>
-          <h1>Welcome to ADVSTAT</h1>
+          <h1>Welcome to STATAXIS</h1>
           <p>Explore relationships in data and make informed decisions with clear statistical analysis.</p>
           <span className="home-tag"><span className="status-dot" /> Analysis workspace</span>
         </section>

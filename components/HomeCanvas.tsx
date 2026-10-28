@@ -51,7 +51,7 @@ export default function HomeCanvas({ persistent = false }: HomeCanvasProps) {
 
     function drawDetails(timestamp: number) {
       const dark = document.documentElement.dataset.theme === "dark";
-      const gridColor = dark ? "rgba(195,204,185,0.035)" : "rgba(102,120,95,0.052)";
+      const gridColor = dark ? "rgba(160,160,160,0.05)" : "rgba(102,120,95,0.065)";
       const gridOffset = reduceMotion ? 0 : (timestamp / 140) % 76;
       ctx!.lineWidth = 1;
       ctx!.strokeStyle = gridColor;
@@ -86,8 +86,8 @@ export default function HomeCanvas({ persistent = false }: HomeCanvasProps) {
             graphPanel.left + graphPanel.width,
             graphPanel.top + graphPanel.height,
           );
-          panelGradient.addColorStop(0, "#8A6037");
-          panelGradient.addColorStop(1, "#69492F");
+          panelGradient.addColorStop(0, "#2D2D30");
+          panelGradient.addColorStop(1, "#252526");
           ctx!.fillStyle = panelGradient;
         } else {
           ctx!.fillStyle = "#35483D";
@@ -110,7 +110,7 @@ export default function HomeCanvas({ persistent = false }: HomeCanvasProps) {
       curveHeight += isAuthCanvas && !reduceMotion ? Math.sin(timestamp / 4700) * 2.5 : 0;
       const startX = centerX - curveWidth / 2;
       const breathe = reduceMotion ? 0 : (Math.sin(timestamp / 3600) + 1) / 2;
-      const curveAlpha = isAuthCanvas ? 0.68 + breathe * 0.1 : 0.095;
+      const curveAlpha = isAuthCanvas ? 0.68 + breathe * 0.1 : 0.12;
       const fillAlpha = isAuthCanvas ? 0.22 + breathe * 0.05 : 0.035;
 
       ctx!.beginPath();
@@ -168,7 +168,7 @@ export default function HomeCanvas({ persistent = false }: HomeCanvasProps) {
         ];
         ctx!.font = "11px Georgia, serif";
         ctx!.textAlign = "center";
-        ctx!.fillStyle = "rgba(232,235,222,0.88)";
+        ctx!.fillStyle = dark ? "rgba(212,212,212,0.9)" : "rgba(232,235,222,0.88)";
         for (const deviation of deviations) {
           const tickX = startX + curveWidth * deviation.position;
           ctx!.beginPath();
@@ -188,7 +188,9 @@ export default function HomeCanvas({ persistent = false }: HomeCanvasProps) {
 
         const symbolAlpha = 0.44 + breathe * 0.2;
         const symbolDrift = reduceMotion ? 0 : Math.sin(timestamp / 1800) * 5;
-        ctx!.fillStyle = `rgba(221,229,214,${Math.max(symbolAlpha, 0.84)})`;
+        ctx!.fillStyle = dark
+          ? `rgba(212,212,212,${Math.max(symbolAlpha, 0.84)})`
+          : `rgba(221,229,214,${Math.max(symbolAlpha, 0.84)})`;
         ctx!.font = "14px Georgia, serif";
         ctx!.textAlign = "left";
         ctx!.fillText("σ", Math.min(width - 22, startX + curveWidth + 12), baseline - curveHeight * 0.55 + symbolDrift);
@@ -218,8 +220,8 @@ export default function HomeCanvas({ persistent = false }: HomeCanvasProps) {
       drawDetails(timestamp);
 
       const dark = document.documentElement.dataset.theme === "dark";
-      const dotColor = dark ? "155,174,141" : "102,120,95";
-      const lineColor = dark ? "155,174,141" : "102,120,95";
+      const dotColor = dark ? "160,160,160" : "102,120,95";
+      const lineColor = dark ? "160,160,160" : "102,120,95";
       const goldColor = "212,168,91";
 
       if (!reduceMotion) {
@@ -240,7 +242,7 @@ export default function HomeCanvas({ persistent = false }: HomeCanvasProps) {
           const other = dots[j];
           const distance = Math.hypot(dot.x - other.x, dot.y - other.y);
           if (distance < 145) {
-            const opacity = (isAuthCanvas ? 0.16 : 0.15) * (1 - distance / 145);
+            const opacity = (isAuthCanvas ? 0.16 : 0.2) * (1 - distance / 145);
             ctx!.strokeStyle = `rgba(${lineColor},${opacity})`;
             ctx!.lineWidth = 0.8;
             ctx!.beginPath();
@@ -271,7 +273,7 @@ export default function HomeCanvas({ persistent = false }: HomeCanvasProps) {
           ? dot.gold ? "rgba(212,168,91,0.58)" : "rgba(195,204,185,0.46)"
           : dot.gold
             ? `rgba(${goldColor},0.3)`
-            : `rgba(${dotColor},${dark ? 0.33 : 0.3})`;
+            : `rgba(${dotColor},${dark ? 0.4 : 0.36})`;
         ctx!.beginPath();
         ctx!.arc(dot.x, dot.y, dot.gold ? 1.6 : isAuthCanvas ? 1.8 : 1.6, 0, Math.PI * 2);
         ctx!.fill();
@@ -364,7 +366,7 @@ export default function HomeCanvas({ persistent = false }: HomeCanvasProps) {
 
     window.addEventListener("resize", resize);
     window.addEventListener("mousemove", move);
-    window.addEventListener("advstat-theme-change", themeChanged);
+    window.addEventListener("stataxis-theme-change", themeChanged);
     motionPreference.addEventListener("change", motionChanged);
     resize();
     return () => {
@@ -372,7 +374,7 @@ export default function HomeCanvas({ persistent = false }: HomeCanvasProps) {
       controlRef.current = null;
       window.removeEventListener("resize", resize);
       window.removeEventListener("mousemove", move);
-      window.removeEventListener("advstat-theme-change", themeChanged);
+      window.removeEventListener("stataxis-theme-change", themeChanged);
       motionPreference.removeEventListener("change", motionChanged);
       cleanups.forEach((cleanup) => cleanup());
     };
