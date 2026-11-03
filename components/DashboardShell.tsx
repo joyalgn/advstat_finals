@@ -61,6 +61,17 @@ export default function DashboardShell({ children, user }: DashboardShellProps) 
             <div className="profile-avatar" aria-hidden="true">{user.name.trim().charAt(0).toUpperCase()}</div>
             <div className="profile-summary"><span className="profile-name">{user.name}</span><span className="profile-email">{user.email}</span></div>
           </div>
+          <Link className={linkClass("/about")} href="/about" title="About Us">
+            <span className="sidebar-icon" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" style={{ display: "block" }}>
+                <circle cx="9" cy="8" r="3.5" />
+                <path d="M2 20c0-3.3 3.1-6 7-6s7 2.7 7 6z" />
+                <circle cx="17" cy="9" r="2.8" />
+                <path d="M17 14c2.8 0 5 1.9 5 4.5V20h-4.2c0-2.2-.8-4.2-2.3-5.5.4-.3.9-.5 1.5-.5z" />
+              </svg>
+            </span>
+            <span className="sidebar-label">About Us</span>
+          </Link>
           <Link className={linkClass("/profile")} href="/profile" title="Profile Settings"><span className="sidebar-icon" aria-hidden="true">⚙</span><span className="sidebar-label">Profile Settings</span></Link>
           <form action={logoutAction}>
             <button className="sidebar-link sidebar-logout" type="submit" title="Logout"><span className="sidebar-icon" aria-hidden="true">↪</span><span className="sidebar-label">Logout</span></button>

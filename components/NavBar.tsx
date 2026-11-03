@@ -20,6 +20,8 @@ export default function NavBar({ user }: NavBarProps) {
           <li><Link className={active("/")} href="/">Home</Link></li>
           <li><Link className={active("/regression")} href="/regression">Regression</Link></li>
           <li><Link className={active("/hypothesis")} href="/hypothesis">Hypothesis Testing</Link></li>
+          <li><Link className={active("/about")} href="/about">About Us</Link></li>
+
           {user ? (
             <li className="nav-account"><span title={user.email}>{user.name}</span><form action={logoutAction}><button className="logout" type="submit">Log out</button></form></li>
           ) : (
