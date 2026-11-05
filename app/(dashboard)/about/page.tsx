@@ -1,3 +1,5 @@
+import HomeCanvas from "../../../components/HomeCanvas";
+
 interface TeamMember {
   name: string;
   image?: string;
@@ -19,22 +21,28 @@ const teamMembers: TeamMember[] = [
 
 export default function AboutPage() {
   return (
-    <div style={{ padding: "2rem", maxWidth: "1200px", margin: "0 auto" }}>
-      <div style={{ marginBottom: "2.5rem", textAlign: "center" }}>
+    <div className="about-page" style={{ padding: "2rem", maxWidth: "1200px", margin: "0 auto" }}>
+      <HomeCanvas showStatisticsGraph={false} />
+      <div style={{ marginBottom: "20px", textAlign: "center" }}>
         <h1
           style={{
             fontSize: "2.25rem",
             fontWeight: "bold",
             color: "inherit",
-            marginBottom: "0.5rem",
+            marginBottom: "15px",
           }}
         >
           MEMBERS
         </h1>
-        <p style={{ color: "inherit", opacity: 0.65, fontSize: "1.1rem" }}>
+        <p style={{ color: "inherit", opacity: 0.65, fontSize: "1.1rem", margin: 0 }}>
           The members behind STATAXIS.
         </p>
       </div>
+
+      <section className="about-class-info" aria-label="Course instructor">
+        <span className="about-class-label">COURSE INSTRUCTOR</span>
+        <p className="about-class-instructor">Ms. Melan Almendras Javier</p>
+      </section>
 
       <div
         style={{
@@ -48,8 +56,9 @@ export default function AboutPage() {
         {teamMembers.map((member, index) => (
           <div
             key={index}
+            className="about-member-card"
             style={{
-              backgroundColor: "color-mix(in srgb, currentColor 5%, transparent)",
+              backgroundColor: "rgba(42, 42, 44, 0.95)",
               border: "1px solid color-mix(in srgb, currentColor 15%, transparent)",
               borderRadius: "1rem",
               padding: "1.5rem 1rem",

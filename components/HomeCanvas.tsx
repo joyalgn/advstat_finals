@@ -14,9 +14,10 @@ interface Dot {
 
 interface HomeCanvasProps {
   persistent?: boolean;
+  showStatisticsGraph?: boolean;
 }
 
-export default function HomeCanvas({ persistent = false }: HomeCanvasProps) {
+export default function HomeCanvas({ persistent = false, showStatisticsGraph = true }: HomeCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const pathname = usePathname();
   const isAuthRoute = pathname === "/login" || pathname === "/register";
@@ -66,6 +67,7 @@ export default function HomeCanvas({ persistent = false }: HomeCanvasProps) {
       }
       ctx!.stroke();
 
+      if (showStatisticsGraph) {
       const graphPanelElement = isAuthCanvas
         ? document.querySelector<HTMLElement>(".auth-graph-panel")
         : undefined;
@@ -210,6 +212,7 @@ export default function HomeCanvas({ persistent = false }: HomeCanvasProps) {
         ctx!.beginPath();
         ctx!.arc(pointX, pointY, 3.2, 0, Math.PI * 2);
         ctx!.fill();
+      }
       }
     }
 
@@ -378,7 +381,7 @@ export default function HomeCanvas({ persistent = false }: HomeCanvasProps) {
       motionPreference.removeEventListener("change", motionChanged);
       cleanups.forEach((cleanup) => cleanup());
     };
-  }, [persistent]);
+  }, [persistent, showStatisticsGraph]);
 
   return persistent
     ? <canvas id="auth-bg" className={`auth-background-canvas${isAuthRoute ? " is-visible" : ""}`} ref={canvasRef} aria-hidden="true" />

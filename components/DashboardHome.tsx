@@ -13,10 +13,17 @@ export default function DashboardHome() {
           <span className="home-tag"><span className="status-dot" /> Analysis workspace</span>
         </section>
         <section className="home-summary bento-card reveal" style={{ "--d": ".12s" } as React.CSSProperties}>
-          <span className="summary-label">STATISTICAL TOOLKIT</span>
-          <div className="summary-count">02</div>
-          <p>Tools available in your workspace.</p>
-          <div className="summary-meta"><span>Regression</span><span>Hypothesis</span></div>
+          <span className="summary-watermark" aria-hidden="true">3B</span>
+          <div className="summary-content">
+            <span className="summary-label">ADVANCE STATISTICS</span>
+            <h2 className="summary-title">BSIT 3B</h2>
+            <p className="summary-instructor">Instructor: Ms. Melan Almendras Javier</p>
+          </div>
+          <div className="summary-academic">
+            <span className="summary-academic-label">ACADEMIC SECTION</span>
+            <p>Third Year · Bachelor of Science in Information Technology</p>
+          </div>
+          <span className="summary-footer">STATISTICAL LEARNING WORKSPACE</span>
         </section>
         <Link className="home-tool regression-tool-card bento-card reveal" style={{ "--d": ".2s" } as React.CSSProperties} href="/regression">
           <div className="tool-card-top"><span className="tool-index">01</span><span className="tool-category">RELATIONSHIPS</span></div>
