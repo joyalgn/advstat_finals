@@ -1,8 +1,10 @@
 import Link from "next/link";
 import Footer from "../../../components/Footer";
 import ClearHistoryButton from "../../../components/ClearHistoryButton";
+import HomeCanvas from "../../../components/HomeCanvas";
 import { requireAuthenticatedUser } from "../../auth/session";
 import { prisma } from "../../../lib/prisma";
+import styles from "../animated-tools.module.css";
 
 export const metadata = { title: "Analysis History | STATAXIS" };
 
@@ -194,7 +196,8 @@ export default async function HistoryPage() {
   });
 
   return (
-    <>
+    <div className={styles.animatedPage}>
+      <HomeCanvas />
       <main className="container">
         <section className="page-head reveal">
           <h1>Analysis History</h1>
@@ -416,6 +419,6 @@ export default async function HistoryPage() {
         )}
       </main>
       <Footer />
-    </>
+    </div>
   );
 }

@@ -1,11 +1,14 @@
 import Link from "next/link";
 import Footer from "../../../components/Footer";
+import HomeCanvas from "../../../components/HomeCanvas";
+import styles from "../animated-tools.module.css";
 
 export const metadata = { title: "Stats Guide | STATAXIS" };
 
 export default function GuidePage() {
   return (
-    <>
+    <div className={styles.animatedPage}>
+      <HomeCanvas />
       <main className="container">
         <section className="page-head reveal">
           <h1>Stats Guide</h1>
@@ -64,6 +67,6 @@ export default function GuidePage() {
         </div>
       </main>
       <Footer />
-    </>
+    </div>
   );
 }
