@@ -198,15 +198,17 @@ export default async function HistoryPage() {
   return (
     <div className={styles.animatedPage}>
       <HomeCanvas />
-      <main className="container">
+      <main className="container history-page-container">
         <section className="page-head reveal">
           <h1>Analysis History</h1>
           <p>Review your completed analyses, datasets, and key results. Only records saved to your account are shown.</p>
         </section>
-        <ClearHistoryButton hasRecords={records.length > 0} />
+        <div className="history-clear-action">
+  <ClearHistoryButton hasRecords={records.length > 0} />
+</div>
         {records.length === 0 ? (
           <section className="panel history-empty">
-            <h2>No analyses yet</h2>
+            <h2>No Analysis Yet</h2>
             <p>Run a regression or hypothesis test and it will appear here for future reference.</p>
             <div className="row">
               <Link className="btn" href="/regression">Open regression</Link>

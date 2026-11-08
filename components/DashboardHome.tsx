@@ -17,7 +17,8 @@ export default function DashboardHome() {
           <div className="summary-content">
             <span className="summary-label">ADVANCE STATISTICS</span>
             <h2 className="summary-title">BSIT 3B</h2>
-            <p className="summary-instructor">Instructor: Ms. Melan Almendras Javier</p>
+            <p className="summary-instructor">Instructor: Engr. Melan Dyrene N. Almendras
+</p>
           </div>
           <div className="summary-academic">
             <span className="summary-academic-label">ACADEMIC SECTION</span>
