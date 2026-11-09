@@ -54,7 +54,7 @@ export default function AboutPage() {
             </div>
             <div className={styles.instructorDetails}>
               <p className={styles.roleLabel}>COURSE INSTRUCTOR</p>
-              <h2 id="instructor-heading">Ms. Melan Almendras Javier</h2>
+              <h2 id="instructor-heading">Engr. Melan Dyrene N. Almendras</h2>
             </div>
             <div className={styles.instructorAside}>
               <span>ADVANCED</span>
